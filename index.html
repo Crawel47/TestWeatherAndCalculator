@@ -2,27 +2,38 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#007bff">
+
+  <title>Weather Calculator</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
-  <title>Weather Calculator</title>
 </head>
 <body>
-  <!-- Погода -->
+  <!-- 1) Строка погоды -->
   <div id="weather">Загрузка погоды...</div>
 
-  <!-- Калькулятор -->
+  <!-- 2) Калькулятор -->
   <div id="calculator">
     <input type="text" id="display" readonly>
     <div id="buttons"></div>
   </div>
 
-  <!-- Камера / AR -->
+  <!-- 3) AR / камера (скрыт) -->
   <div id="arContainer">
     <video id="camera" autoplay playsinline></video>
     <button id="arClose">Ok</button>
   </div>
 
   <script src="app.js"></script>
+  <script>
+    // Регистрируем service worker для PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('service-worker.js')
+        .then(() => console.log('ServiceWorker зарегистрирован'))
+        .catch(err => console.error('ServiceWorker не зарегистрирован', err));
+    }
+  </script>
 </body>
 </html>
