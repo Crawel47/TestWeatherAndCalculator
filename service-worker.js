@@ -1,9 +1,18 @@
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open('v1').then(cache =>
-    cache.addAll(['index.html','style.css','app.js'])
-  ));
-});
-self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open('v1').then(cache =>
+      cache.addAll([
+        'index.html',
+        'style.css',
+        'app.js',
+        'manifest.json'
+      ])
+    )
+  );
 });
 
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(r => r || fetch(event.request))
+  );
+});
