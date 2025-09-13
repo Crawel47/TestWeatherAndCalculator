@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <!-- 1) Строка погоды -->
+  <!-- 1) Погода -->
   <div id="weather">Загрузка погоды...</div>
 
   <!-- 2) Калькулятор -->
@@ -18,12 +18,21 @@
     <div id="buttons"></div>
   </div>
 
-  <!-- 3) AR / камера (скрыт) -->
+  <!-- 3) AR / камера -->
   <div id="arContainer">
     <video id="camera" autoplay playsinline></video>
+    <div id="arLabel"></div>
     <button id="arClose">Ok</button>
   </div>
 
   <script src="app.js"></script>
+  <script>
+    // Регистрируем service worker для PWA (можно удалить блок, если не нужен)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('service-worker.js')
+        .catch(() => {/* игнорируем */});
+    }
+  </script>
 </body>
 </html>
