@@ -1,68 +1,88 @@
-/* Общие сбросы */
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:sans-serif; height:100vh; overflow:hidden; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: sans-serif;
+  height: 100vh;
+  overflow: hidden;
+}
 
 /* Погода */
 #weather {
-  height:20vh;
-  background:#007bff;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:1.2em;
+  height: 20vh;
+  background: #007bff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
 }
 
 /* Калькулятор */
 #calculator {
-  height:80vh;
-  background:#2b2b2b;
-  display:flex;
-  flex-direction:column;
+  height: 80vh;
+  background: #2b2b2b;
+  display: flex;
+  flex-direction: column;
 }
 #display {
-  height:15%;
-  background:#000;
-  color:#f2f2f2;
-  font-size:2em;
-  text-align:right;
-  padding:0.5em;
+  height: 15%;
+  background: #000;
+  color: #f2f2f2;
+  font-size: 2em;
+  text-align: right;
+  padding: 0.5em;
 }
 #buttons {
-  height:85%;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  grid-gap:1px;
+  height: 85%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  grid-gap: 1px;
 }
+/* Зяполнитель пустых ячеек */
+.spacer {
+  background: #2b2b2b;
+}
+/* Обычные кнопки */
 button {
-  font-size:1.5em;
-  background:#3a3a3a;
-  color:#f2f2f2;
-  border:none;
-  outline:none;
+  font-size: 1.5em;
+  background: #3a3a3a;
+  color: #f2f2f2;
+  border: none;
+  outline: none;
+  cursor: pointer;
 }
 /* Розовая кнопка "=" */
-button.equal { background:#ff69b4; }
-/* Режим камеры */
+button.equal {
+  background: #ff69b4;
+}
+/* AR-контейнер */
 #arContainer {
-  display:none;
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:#000;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
 }
 #camera {
-  width:100%; height:100%;
-  object-fit:cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 /* Кнопка Ok */
 #arClose {
-  position:absolute;
-  bottom:10px; left:50%;
-  transform:translateX(-50%);
-  padding:1em 2em;
-  background:#ff0;
-  border:none;
-  font-size:1em;
-  cursor:pointer;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1em 2em;
+  background: #ff0;
+  border: none;
+  font-size: 1em;
+  cursor: pointer;
 }
