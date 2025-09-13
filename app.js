@@ -1,9 +1,9 @@
-// ====== Вставь свой API-ключ ======
+// ==== ВСТАВЬ СВОЙ API-КЛЮЧ ====
 const API_KEY = '9cd4e22e549986927e4686022220bc11';
 
 let tempC, tempF;
 
-// 1) Загрузка погоды
+// 1) Получаем погоду
 function loadWeather() {
   if (!navigator.geolocation) {
     return showWeatherError('Геолокация не поддерживается');
@@ -36,7 +36,7 @@ function showWeatherError(msg) {
   document.getElementById('weather').textContent = msg;
 }
 
-// 2) Настройка NumPad-раскладки
+// 2) Строим NumPad
 function setupCalculator() {
   const disp = document.getElementById('display');
   const btns = document.getElementById('buttons');
@@ -74,31 +74,31 @@ function setupCalculator() {
       const expr = disp.value.replace(/×/g, '*').replace(/÷/g, '/');
       const result = Math.round(eval(expr));
       disp.value = result;
-      if (result === tempC || result === tempF) startAR();
+      if (result === tempC || result === tempF) {
+        startAR(result);
+      }
     } catch {
       disp.value = 'Ошибка';
     }
   }
 }
 
-// 3) Запуск задней камеры
-function startAR() {
+// 3) Запуск задней камеры и показ цифры
+function startAR(matchValue) {
   document.getElementById('calculator').style.display = 'none';
   const arC = document.getElementById('arContainer');
   arC.style.display = 'block';
+  document.getElementById('arLabel').textContent = matchValue;
 
   navigator.mediaDevices
     .getUserMedia({ video: { facingMode: { ideal: 'environment' } } })
     .then(stream => {
       document.getElementById('camera').srcObject = stream;
     })
-    .catch(err => {
-      console.error('Ошибка камеры:', err);
-      closeAR();
-    });
+    .catch(() => closeAR());
 }
 
-// 4) Закрытие AR и отключение камеры
+// 4) Остановка камеры и возврат
 function closeAR() {
   const vid = document.getElementById('camera');
   if (vid.srcObject) {
@@ -108,9 +108,9 @@ function closeAR() {
   document.getElementById('calculator').style.display = 'flex';
 }
 
-// Навешиваем кнопку Ok и инициализируем всё
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('arClose').addEventListener('click', closeAR);
+  document.getElementById('arClose')
+    .addEventListener('click', closeAR);
   window.addEventListener('load', () => {
     loadWeather();
     setupCalculator();
