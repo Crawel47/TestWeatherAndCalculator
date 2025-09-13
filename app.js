@@ -1,4 +1,4 @@
-const API_KEY = 'ВАШ_API_КЛЮЧ';
+const API_KEY = '9cd4e22e549986927e4686022220bc11';
 let tempC, tempF;
 
 function loadWeather() {
