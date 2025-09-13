@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#007bff">
-
   <title>Weather Calculator</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
@@ -27,12 +26,11 @@
 
   <script src="app.js"></script>
   <script>
-    // Регистрируем service worker для PWA
+    // Регистрируем service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('service-worker.js')
-        .then(() => console.log('ServiceWorker зарегистрирован'))
-        .catch(err => console.error('ServiceWorker не зарегистрирован', err));
+        .catch(err => console.error(err));
     }
   </script>
 </body>
