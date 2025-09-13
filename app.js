@@ -1,20 +1,20 @@
-// ====== ВСТАВЬ СВОЙ КЛЮЧ ======
+// ====== Вставь свой API-ключ ======
 const API_KEY = '9cd4e22e549986927e4686022220bc11';
 
 let tempC, tempF;
 
-// 1) Получаем геолокацию и грузим погоду
+// 1) Загрузка погоды
 function loadWeather() {
   if (!navigator.geolocation) {
     return showWeatherError('Геолокация не поддерживается');
   }
   navigator.geolocation.getCurrentPosition(
     pos => {
-      const url = `https://api.openweathermap.org/data/2.5/weather`
-        + `?lat=${pos.coords.latitude}`
-        + `&lon=${pos.coords.longitude}`
-        + `&appid=${API_KEY}&units=metric`;
-
+      const url =
+        `https://api.openweathermap.org/data/2.5/weather` +
+        `?lat=${pos.coords.latitude}` +
+        `&lon=${pos.coords.longitude}` +
+        `&appid=${API_KEY}&units=metric`;
       fetch(url)
         .then(res => {
           if (!res.ok) throw new Error(res.status);
@@ -26,15 +26,9 @@ function loadWeather() {
           document.getElementById('weather')
             .textContent = `${tempC}°C / ${tempF}°F`;
         })
-        .catch(err => {
-          console.error('Ошибка fetch:', err);
-          showWeatherError('Не удалось загрузить погоду');
-        });
+        .catch(() => showWeatherError('Не удалось загрузить погоду'));
     },
-    err => {
-      console.error('Ошибка геолокации:', err);
-      showWeatherError('Геолокация недоступна');
-    }
+    () => showWeatherError('Геолокация недоступна')
   );
 }
 
@@ -42,11 +36,10 @@ function showWeatherError(msg) {
   document.getElementById('weather').textContent = msg;
 }
 
-// 2) Строим NumPad-раскладку и калькулятор
+// 2) Настройка NumPad-раскладки
 function setupCalculator() {
   const disp = document.getElementById('display');
   const btns = document.getElementById('buttons');
-
   const symbols = [
     'C','←','','',
     '7','8','9','÷',
@@ -56,7 +49,7 @@ function setupCalculator() {
   ];
 
   symbols.forEach(s => {
-    if (s === '') {
+    if (!s) {
       const sp = document.createElement('div');
       sp.className = 'spacer';
       btns.appendChild(sp);
@@ -70,47 +63,42 @@ function setupCalculator() {
   });
 
   function onButton(s) {
-    if (s === 'C') {
-      disp.value = '';
-    }
-    else if (s === '←') {
-      disp.value = disp.value.slice(0, -1);
-    }
-    else if (s === '=') {
-      try {
-        const expr = disp.value.replace(/×/g, '*').replace(/÷/g, '/');
-        const result = Math.round(eval(expr));
-        disp.value = result;
-        if (result === tempC || result === tempF) {
-          startAR();
-        }
-      } catch {
-        disp.value = 'Ошибка';
-      }
-    }
-    else {
-      disp.value += s;
+    if (s === 'C') disp.value = '';
+    else if (s === '←') disp.value = disp.value.slice(0, -1);
+    else if (s === '=') calculate();
+    else disp.value += s;
+  }
+
+  function calculate() {
+    try {
+      const expr = disp.value.replace(/×/g, '*').replace(/÷/g, '/');
+      const result = Math.round(eval(expr));
+      disp.value = result;
+      if (result === tempC || result === tempF) startAR();
+    } catch {
+      disp.value = 'Ошибка';
     }
   }
 }
 
-// 3) Запуск камеры
+// 3) Запуск задней камеры
 function startAR() {
   document.getElementById('calculator').style.display = 'none';
   const arC = document.getElementById('arContainer');
   arC.style.display = 'block';
 
-  navigator.mediaDevices.getUserMedia({ video: true })
+  navigator.mediaDevices
+    .getUserMedia({ video: { facingMode: { ideal: 'environment' } } })
     .then(stream => {
       document.getElementById('camera').srcObject = stream;
     })
     .catch(err => {
-      console.error('Камера не доступна:', err);
+      console.error('Ошибка камеры:', err);
       closeAR();
     });
 }
 
-// 4) Остановка камеры и возврат
+// 4) Закрытие AR и отключение камеры
 function closeAR() {
   const vid = document.getElementById('camera');
   if (vid.srcObject) {
@@ -120,14 +108,11 @@ function closeAR() {
   document.getElementById('calculator').style.display = 'flex';
 }
 
-// Навешиваем кнопку Ok
+// Навешиваем кнопку Ok и инициализируем всё
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('arClose')
-    .addEventListener('click', closeAR);
-});
-
-// Инициализируем всё по загрузке
-window.addEventListener('load', () => {
-  loadWeather();
-  setupCalculator();
+  document.getElementById('arClose').addEventListener('click', closeAR);
+  window.addEventListener('load', () => {
+    loadWeather();
+    setupCalculator();
+  });
 });
