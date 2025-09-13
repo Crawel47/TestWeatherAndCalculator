@@ -1,42 +1,52 @@
-// ====== Настройка ======
-// ====== Настройка ======
-const API_KEY = '9cd4e22e549986927e4686022220bc11'; // ← вставь свой ключ
+// ====== ВСТАВЬ СВОЙ КЛЮЧ ======
+const API_KEY = '9cd4e22e549986927e4686022220bc11';
+
 let tempC, tempF;
 
-// Загружаем погоду
+// 1) Получаем геолокацию и грузим погоду
 function loadWeather() {
+  if (!navigator.geolocation) {
+    return showWeatherError('Геолокация не поддерживается');
+  }
   navigator.geolocation.getCurrentPosition(
     pos => {
-      fetch(
-        `https://api.openweathermap.org/data/2.5/weather` +
-        `?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}` +
-        `&appid=${API_KEY}&units=metric`
-      )
-      .then(r => r.json())
-      .then(data => {
-        tempC = Math.round(data.main.temp);
-        tempF = Math.round(tempC * 9/5 + 32);
-        document.getElementById('weather')
-          .textContent = `${tempC}°C / ${tempF}°F`;
-      })
-      .catch(() => {
-        document.getElementById('weather')
-          .textContent = 'Ошибка погоды';
-      });
+      const url = `https://api.openweathermap.org/data/2.5/weather`
+        + `?lat=${pos.coords.latitude}`
+        + `&lon=${pos.coords.longitude}`
+        + `&appid=${API_KEY}&units=metric`;
+
+      fetch(url)
+        .then(res => {
+          if (!res.ok) throw new Error(res.status);
+          return res.json();
+        })
+        .then(data => {
+          tempC = Math.round(data.main.temp);
+          tempF = Math.round(tempC * 9/5 + 32);
+          document.getElementById('weather')
+            .textContent = `${tempC}°C / ${tempF}°F`;
+        })
+        .catch(err => {
+          console.error('Ошибка fetch:', err);
+          showWeatherError('Не удалось загрузить погоду');
+        });
     },
-    () => {
-      document.getElementById('weather')
-        .textContent = 'Геолокация недоступна';
+    err => {
+      console.error('Ошибка геолокации:', err);
+      showWeatherError('Геолокация недоступна');
     }
   );
 }
 
-// Создаём клавиатуру
+function showWeatherError(msg) {
+  document.getElementById('weather').textContent = msg;
+}
+
+// 2) Строим NumPad-раскладку и калькулятор
 function setupCalculator() {
   const disp = document.getElementById('display');
   const btns = document.getElementById('buttons');
 
-  // NumPad-раскладка: 5 строк по 4 ячейки
   const symbols = [
     'C','←','','',
     '7','8','9','÷',
@@ -47,9 +57,9 @@ function setupCalculator() {
 
   symbols.forEach(s => {
     if (s === '') {
-      const spacer = document.createElement('div');
-      spacer.className = 'spacer';
-      btns.appendChild(spacer);
+      const sp = document.createElement('div');
+      sp.className = 'spacer';
+      btns.appendChild(sp);
       return;
     }
     const btn = document.createElement('button');
@@ -68,9 +78,7 @@ function setupCalculator() {
     }
     else if (s === '=') {
       try {
-        const expr = disp.value
-          .replace(/×/g, '*')
-          .replace(/÷/g, '/');
+        const expr = disp.value.replace(/×/g, '*').replace(/÷/g, '/');
         const result = Math.round(eval(expr));
         disp.value = result;
         if (result === tempC || result === tempF) {
@@ -86,7 +94,7 @@ function setupCalculator() {
   }
 }
 
-// Запуск камеры
+// 3) Запуск камеры
 function startAR() {
   document.getElementById('calculator').style.display = 'none';
   const arC = document.getElementById('arContainer');
@@ -97,12 +105,12 @@ function startAR() {
       document.getElementById('camera').srcObject = stream;
     })
     .catch(err => {
-      console.error('Камера недоступна', err);
+      console.error('Камера не доступна:', err);
       closeAR();
     });
 }
 
-// Остановка камеры и возврат
+// 4) Остановка камеры и возврат
 function closeAR() {
   const vid = document.getElementById('camera');
   if (vid.srcObject) {
@@ -118,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .addEventListener('click', closeAR);
 });
 
-// Инициализация
+// Инициализируем всё по загрузке
 window.addEventListener('load', () => {
   loadWeather();
   setupCalculator();
