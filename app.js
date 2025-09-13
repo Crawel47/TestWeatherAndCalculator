@@ -1,43 +1,57 @@
 // ====== Настройка ======
-const API_KEY = '9cd4e22e549986927e4686022220bc11'; // ← Вставь сюда свой ключ
+// ====== Настройка ======
+const API_KEY = '9cd4e22e549986927e4686022220bc11'; // ← вставь свой ключ
 let tempC, tempF;
 
-// Загрузка погоды по геолокации
+// Загружаем погоду
 function loadWeather() {
-  navigator.geolocation.getCurrentPosition(pos => {
-    fetch(
-      `https://api.openweathermap.org/data/2.5/weather` +
-      `?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}` +
-      `&appid=${API_KEY}&units=metric`
-    )
-    .then(res => res.json())
-    .then(data => {
-      tempC = Math.round(data.main.temp);
-      tempF = Math.round(tempC * 9/5 + 32);
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      fetch(
+        `https://api.openweathermap.org/data/2.5/weather` +
+        `?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}` +
+        `&appid=${API_KEY}&units=metric`
+      )
+      .then(r => r.json())
+      .then(data => {
+        tempC = Math.round(data.main.temp);
+        tempF = Math.round(tempC * 9/5 + 32);
+        document.getElementById('weather')
+          .textContent = `${tempC}°C / ${tempF}°F`;
+      })
+      .catch(() => {
+        document.getElementById('weather')
+          .textContent = 'Ошибка погоды';
+      });
+    },
+    () => {
       document.getElementById('weather')
-        .textContent = `${tempC}°C / ${tempF}°F`;
-    })
-    .catch(() => {
-      document.getElementById('weather')
-        .textContent = 'Не удалось загрузить погоду';
-    });
-  }, () => {
-    document.getElementById('weather')
-      .textContent = 'Геолокация недоступна';
-  });
+        .textContent = 'Геолокация недоступна';
+    }
+  );
 }
 
-// Создание кнопок и логики калькулятора
+// Создаём клавиатуру
 function setupCalculator() {
   const disp = document.getElementById('display');
   const btns = document.getElementById('buttons');
+
+  // NumPad-раскладка: 5 строк по 4 ячейки
   const symbols = [
-    'C','←','7','8','9','+',
-    '4','5','6','-','1','2','3','×',
-    '0','.','=','÷'
+    'C','←','','',
+    '7','8','9','÷',
+    '4','5','6','×',
+    '1','2','3','-',
+    '0','.','=','+'
   ];
 
   symbols.forEach(s => {
+    if (s === '') {
+      const spacer = document.createElement('div');
+      spacer.className = 'spacer';
+      btns.appendChild(spacer);
+      return;
+    }
     const btn = document.createElement('button');
     btn.textContent = s;
     if (s === '=') btn.classList.add('equal');
@@ -54,7 +68,9 @@ function setupCalculator() {
     }
     else if (s === '=') {
       try {
-        const expr = disp.value.replace(/×/g,'*').replace(/÷/g,'/');
+        const expr = disp.value
+          .replace(/×/g, '*')
+          .replace(/÷/g, '/');
         const result = Math.round(eval(expr));
         disp.value = result;
         if (result === tempC || result === tempF) {
@@ -70,7 +86,7 @@ function setupCalculator() {
   }
 }
 
-// Запуск камеры и показ AR-контейнера
+// Запуск камеры
 function startAR() {
   document.getElementById('calculator').style.display = 'none';
   const arC = document.getElementById('arContainer');
@@ -81,13 +97,12 @@ function startAR() {
       document.getElementById('camera').srcObject = stream;
     })
     .catch(err => {
-      console.error('Ошибка доступа к камере', err);
-      alert('Не удалось включить камеру');
+      console.error('Камера недоступна', err);
       closeAR();
     });
 }
 
-// Остановка камеры и возврат к калькулятору
+// Остановка камеры и возврат
 function closeAR() {
   const vid = document.getElementById('camera');
   if (vid.srcObject) {
@@ -97,9 +112,10 @@ function closeAR() {
   document.getElementById('calculator').style.display = 'flex';
 }
 
-// Навешиваем обработчик на кнопку Ok
+// Навешиваем кнопку Ok
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('arClose').addEventListener('click', closeAR);
+  document.getElementById('arClose')
+    .addEventListener('click', closeAR);
 });
 
 // Инициализация
