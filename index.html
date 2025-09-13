@@ -25,13 +25,5 @@
   </div>
 
   <script src="app.js"></script>
-  <script>
-    // Регистрируем service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('service-worker.js')
-        .catch(err => console.error(err));
-    }
-  </script>
 </body>
 </html>
