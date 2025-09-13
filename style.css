@@ -40,8 +40,19 @@ button {
 }
 button.equal { background:#ff69b4; }
 
-/* 3) Предпросмотр маркера */
-#markerPreview { border:1px solid #000; }
+/* 3) Превью маркера */
+#markerTip {
+  position:absolute;
+  top:5vh;
+  right:5vw;
+  width:120px;
+  background:#fff;
+  color:#000;
+  padding:0.5em;
+  font-size:0.8em;
+  z-index:1000;
+  border:1px solid #000;
+}
 
 /* 4) AR-контейнер */
 #arContainer {
