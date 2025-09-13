@@ -6,11 +6,10 @@
   <meta name="theme-color" content="#007bff">
   <title>Weather Calculator</title>
 
-  <!-- стили и манифест -->
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
 
-  <!-- A-Frame + AR.js -->
+  <!-- A-Frame и AR.js -->
   <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.0/dist/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.js"></script>
 </head>
@@ -24,12 +23,14 @@
     <div id="buttons"></div>
   </div>
 
-  <!-- 3) Превью маркера Hiro (чёрно-белый квадратик). 
-       Открой эту страницу в другой вкладке/девайсе или распечатай и наведи камеру -->
-  <img id="markerPreview"
-       src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/examples/marker-training/examples/patterns/pattern-hiro.png"
-       alt="Hiro Marker"
-       style="position:absolute; top:10px; right:10px; width:80px; background:#fff; z-index:1000;">
+  <!-- 3) Превью маркера Hiro -->
+  <div id="markerTip">
+    Чтобы цифра «прилипала» в пространстве, навести камеру нужно на этот квадратик:
+    <img src="https://raw.githubusercontent.com/AR-js-org/AR.js/master/aframe/examples/marker-training/examples/patterns/pattern-hiro.png"
+         alt="Hiro Marker" style="width:80px; border:1px solid #000;">
+    <br>
+    Открой эту страницу на другом устройстве или распечатай картинку.
+  </div>
 
   <!-- 4) AR-сцена (скрыта) -->
   <div id="arContainer">
@@ -40,13 +41,11 @@
       renderer="logarithmicDepthBuffer: true;"
       style="position:absolute; top:0; left:0; width:100%; height:100%;"
     >
-      <a-marker preset="hiro" type="pattern">
-        <!-- Цифра, «парящая» над маркером -->
+      <a-marker preset="hiro">
         <a-text id="arLabel"
                 value=""
                 color="#FFF"
                 align="center"
-                /* мы установим random-позицию из JS */
                 position="0 0.5 0"
                 width="2">
         </a-text>
