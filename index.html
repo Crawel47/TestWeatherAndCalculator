@@ -77,6 +77,18 @@
       position: absolute;
       z-index: 2;
     }
+
+    #close-btn {
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: orange;
+      color: black;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
@@ -84,106 +96,12 @@
 
   <div id="calculator">
     <div id="result">0</div>
+    <button onclick="clearAll()">C</button>
+    <button onclick="backspace()">←</button>
+    <button onclick="append('.')">.</button>
+    <button onclick="append('/')">/</button>
     <button onclick="append('7')">7</button>
     <button onclick="append('8')">8</button>
     <button onclick="append('9')">9</button>
-    <button onclick="append('/')">/</button>
-    <button onclick="append('4')">4</button>
-    <button onclick="append('5')">5</button>
-    <button onclick="append('6')">6</button>
     <button onclick="append('*')">*</button>
-    <button onclick="append('1')">1</button>
-    <button onclick="append('2')">2</button>
-    <button onclick="append('3')">3</button>
-    <button onclick="append('-')">-</button>
-    <button onclick="append('0')">0</button>
-    <button onclick="append('.')">.</button>
-    <button onclick="calculate()">=</button>
-    <button onclick="append('+')">+</button>
-  </div>
-
-  <div id="ar-container"></div>
-
-  <script>
-    let expression = "";
-    let currentTemp = null;
-
-    function append(char) {
-      expression += char;
-      document.getElementById("result").textContent = expression;
-    }
-
-    function calculate() {
-      try {
-        const result = eval(expression);
-        document.getElementById("result").textContent = result;
-        if (currentTemp !== null && Math.round(result) === Math.round(currentTemp)) {
-          startAR(result);
-        }
-        expression = "";
-      } catch {
-        document.getElementById("result").textContent = "Ошибка";
-        expression = "";
-      }
-    }
-
-    function startAR(result) {
-      const arContainer = document.getElementById("ar-container");
-      arContainer.innerHTML = "";
-      arContainer.style.display = "block";
-
-      const video = document.createElement("video");
-      video.setAttribute("autoplay", "");
-      video.setAttribute("playsinline", "");
-      video.style.width = "100%";
-      video.style.height = "100%";
-      arContainer.appendChild(video);
-
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then((stream) => {
-          video.srcObject = stream;
-
-          const overlay = document.createElement("div");
-          overlay.textContent = result;
-          overlay.style.top = "50%";
-          overlay.style.left = "50%";
-          overlay.style.transform = "translate(-50%, -50%)";
-          overlay.style.fontSize = "48px";
-          overlay.style.color = "yellow";
-          arContainer.appendChild(overlay);
-
-          const exitButton = document.createElement("button");
-          exitButton.textContent = "Ok";
-          exitButton.style.bottom = "20px";
-          exitButton.style.left = "50%";
-          exitButton.style.transform = "translateX(-50%)";
-          exitButton.style.padding = "10px 20px";
-          exitButton.style.fontSize = "18px";
-          exitButton.onclick = () => {
-            stream.getTracks().forEach(track => track.stop());
-            arContainer.style.display = "none";
-          };
-          arContainer.appendChild(exitButton);
-        })
-        .catch((error) => {
-          console.error("Ошибка камеры:", error);
-          arContainer.innerHTML = "<p style='color:red;'>Не удалось получить доступ к камере.</p>";
-        });
-    }
-
-    async function fetchWeather() {
-      try {
-        const response = await fetch("https://api.open-meteo.com/v1/forecast?latitude=32.7767&longitude=-96.7970&current_weather=true");
-        const data = await response.json();
-        currentTemp = data.current_weather.temperature;
-        document.getElementById("weather").textContent = `Температура сейчас: ${currentTemp}°C`;
-      } catch (error) {
-        console.error("Ошибка загрузки погоды:", error);
-        document.getElementById("weather").textContent = "Не удалось загрузить погоду";
-      }
-    }
-
-    fetchWeather();
-  </script>
-</body>
-</html>
+    <button onclick="append('4')">
