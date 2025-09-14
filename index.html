@@ -13,30 +13,42 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
       height: 100vh;
     }
 
     #weather {
       width: 100%;
-      text-align: center;
       padding: 10px;
       font-size: 20px;
       color: #00aaff;
       background-color: #111;
+      text-align: center;
     }
 
     #calculator {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
       width: 90%;
       max-width: 400px;
+      margin-top: 10px;
+    }
+
+    #result {
+      width: 100%;
+      background-color: #111;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 32px;
+      text-align: right;
+      border-radius: 5px;
+      color: #fff;
     }
 
     button {
-      padding: 20px;
+      width: 22%;
+      padding: 20px 0;
+      margin-bottom: 5px;
       font-size: 24px;
       background-color: #333;
       color: #eee;
@@ -48,20 +60,12 @@
       background-color: #444;
     }
 
-    #result {
-      grid-column: span 4;
-      font-size: 32px;
-      text-align: right;
-      padding: 10px;
-      background-color: #111;
-      color: #fff;
-      border-radius: 5px;
-    }
-
     #ar-container {
-      position: relative;
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: 100vh;
+      height: 100%;
       display: none;
       background-color: black;
     }
@@ -72,13 +76,8 @@
       object-fit: cover;
     }
 
-    #ar-container div,
-    #ar-container button {
-      position: absolute;
-      z-index: 2;
-    }
-
     #close-btn {
+      position: absolute;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
@@ -88,6 +87,17 @@
       font-size: 18px;
       border: none;
       border-radius: 5px;
+      z-index: 2;
+    }
+
+    #overlay-number {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      color: yellow;
+      z-index: 2;
     }
   </style>
 </head>
@@ -104,4 +114,107 @@
     <button onclick="append('8')">8</button>
     <button onclick="append('9')">9</button>
     <button onclick="append('*')">*</button>
-    <button onclick="append('4')">
+    <button onclick="append('4')">4</button>
+    <button onclick="append('5')">5</button>
+    <button onclick="append('6')">6</button>
+    <button onclick="append('-')">-</button>
+    <button onclick="append('1')">1</button>
+    <button onclick="append('2')">2</button>
+    <button onclick="append('3')">3</button>
+    <button onclick="append('+')">+</button>
+    <button onclick="append('0')" style="width: 47%;">0</button>
+    <button onclick="calculate()" style="width: 47%;">=</button>
+  </div>
+
+  <div id="ar-container">
+    <video autoplay playsinline></video>
+    <div id="overlay-number"></div>
+    <button id="close-btn">CLOSE</button>
+  </div>
+
+  <script>
+    let expression = "";
+    let currentTemp = null;
+
+    function append(char) {
+      expression += char;
+      updateResult();
+    }
+
+    function clearAll() {
+      expression = "";
+      updateResult();
+    }
+
+    function backspace() {
+      expression = expression.slice(0, -1);
+      updateResult();
+    }
+
+    function updateResult() {
+      const out = expression || "0";
+      document.getElementById("result").textContent = out;
+    }
+
+    function calculate() {
+      try {
+        const result = eval(expression);
+        document.getElementById("result").textContent = result;
+        expression = "";
+        if (currentTemp !== null && Math.round(result) === Math.round(currentTemp)) {
+          startAR(result);
+        }
+      } catch {
+        document.getElementById("result").textContent = "Ошибка";
+        expression = "";
+      }
+    }
+
+    function startAR(number) {
+      const calc = document.getElementById("calculator");
+      const ar = document.getElementById("ar-container");
+      const video = ar.querySelector("video");
+      const overlay = document.getElementById("overlay-number");
+      const closeBtn = document.getElementById("close-btn");
+
+      calc.style.display = "none";
+      ar.style.display = "block";
+      overlay.textContent = number;
+
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { exact: "environment" } }
+      })
+      .then(stream => {
+        video.srcObject = stream;
+        closeBtn.onclick = () => {
+          stream.getTracks().forEach(t => t.stop());
+          ar.style.display = "none";
+          calc.style.display = "flex";
+        };
+      })
+      .catch(err => {
+        console.error("Ошибка камеры:", err);
+        overlay.textContent = "Камера недоступна";
+      });
+    }
+
+    async function fetchWeather() {
+      try {
+        const res = await fetch(
+          "https://api.open-meteo.com/v1/forecast?latitude=32.7767&longitude=-96.7970&current_weather=true"
+        );
+        const data = await res.json();
+        currentTemp = data.current_weather.temperature;
+        document.getElementById("weather").textContent =
+          "Температура сейчас: " + currentTemp + "°C";
+      } catch (err) {
+        console.error("Ошибка погоды:", err);
+        document.getElementById("weather").textContent =
+          "Не удалось загрузить погоду";
+      }
+    }
+
+    fetchWeather();
+  </script>
+</body>
+</html>
