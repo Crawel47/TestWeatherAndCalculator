@@ -1,7 +1,8 @@
 {
   "name": "Калькулятор с погодой и AR",
   "short_name": "WeatherCalcAR",
-  "start_url": "index.html",
+  "start_url": "/TestWeatherAndCalculator/index.html",
+  "scope": "/TestWeatherAndCalculator/",
   "display": "standalone",
   "background_color": "#222",
   "theme_color": "#00aaff",
